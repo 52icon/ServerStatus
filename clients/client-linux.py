@@ -94,15 +94,14 @@ def liuliang():
         for line in f.readlines():
             netinfo = re.findall('([^\s]+):[\s]{0,}(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)', line)
             if netinfo:
-                if netinfo[0][0] == 'lo' or 'tun' in netinfo[0][0] \
-                        or 'docker' in netinfo[0][0] or 'veth' in netinfo[0][0] \
-                        or 'br-' in netinfo[0][0] or 'vmbr' in netinfo[0][0] \
-                        or 'vnet' in netinfo[0][0] or 'kube' in netinfo[0][0] \
-                        or netinfo[0][1]=='0' or netinfo[0][9]=='0':
-                    continue
+                row = [item for item in netinfo if item[0] == 'enp7s0f0']
+                if row:
+                        element1 = row[0][1]
+                        element2 = row[0][9]
+                        NET_IN=element1
+                        NET_OUT=element2
                 else:
-                    NET_IN += int(netinfo[0][1])
-                    NET_OUT += int(netinfo[0][9])
+                        continue
     return NET_IN, NET_OUT
 
 def tupd():
@@ -200,15 +199,12 @@ def _net_speed():
             avgrx = 0
             avgtx = 0
             for dev in net_dev[2:]:
-                dev = dev.split(':')
-                if "lo" in dev[0] or "tun" in dev[0] \
-                        or "docker" in dev[0] or "veth" in dev[0] \
-                        or "br-" in dev[0] or "vmbr" in dev[0] \
-                        or "vnet" in dev[0] or "kube" in dev[0]:
-                    continue
-                dev = dev[1].split()
-                avgrx += int(dev[0])
-                avgtx += int(dev[8])
+                for dev in net_dev[2:]:
+                    if "enp7s0f0" in dev:
+                        dev = dev.split(':')
+                        dev = dev[1].split()
+                        avgrx += int(dev[0])
+                        avgtx += int(dev[8])
             now_clock = time.time()
             netSpeed["diff"] = now_clock - netSpeed["clock"]
             netSpeed["clock"] = now_clock
