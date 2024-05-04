@@ -90,20 +90,15 @@ def get_cpu():
 def liuliang():
     NET_IN = 0
     NET_OUT = 0
-    with open('/proc/net/dev') as f:
-        for line in f.readlines():
-            netinfo = re.findall('([^\s]+):[\s]{0,}(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)', line)
-            if netinfo:
-                if netinfo[0][0] == 'lo' or 'tun' in netinfo[0][0] \
-                        or 'docker' in netinfo[0][0] or 'veth' in netinfo[0][0] \
-                        or 'br-' in netinfo[0][0] or 'vmbr' in netinfo[0][0] \
-                        or 'vnet' in netinfo[0][0] or 'kube' in netinfo[0][0] \
-                        or netinfo[0][1]=='0' or netinfo[0][9]=='0':
-                    continue
-                else:
+    with open('/proc/net/dev') as f: 
+        for line in f.readlines(): 
+            netinfo = re.findall('([^\s]+):[\s]{0,}(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+($
+            if netinfo: 
+                interface_name = netinfo[0][0]  
+                if interface_name == 'enp7s0f0': 
                     NET_IN += int(netinfo[0][1])
                     NET_OUT += int(netinfo[0][9])
-    return NET_IN, NET_OUT
+    return NET_IN, NET_OUT  
 
 def tupd():
     '''
